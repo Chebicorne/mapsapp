@@ -11,34 +11,12 @@ import {
 } from 'react-native';
 import { Camera } from 'expo-camera';
 import * as Sharing from 'expo-sharing';
-import { PermissionsAndroid, Platform } from 'react-native';
-import * as Location from 'expo-location';
 
 export default function CameraScreen() {
-  const [hasCameraPermission, setHasCameraPermission] = useState<boolean>(false);
-  const [hasLocationPermission, setHasLocationPermission] = useState<boolean>(false);
 
   const [isModalVisible, setModalVisible] = useState(false);
   const [photos, setPhotos] = useState<string[]>([]);
   const cameraRef = useRef<Camera>(null);
-
-  useEffect(() => {
-    (async () => {
-      if (Platform.OS === 'android') {
-        const cameraPermission = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.CAMERA,
-        );
-        const locationPermission = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        );
-        setHasCameraPermission(cameraPermission === PermissionsAndroid.RESULTS.GRANTED);
-        setHasLocationPermission(locationPermission === PermissionsAndroid.RESULTS.GRANTED);
-      } else {
-        const { status } = await Location.requestForegroundPermissionsAsync();
-        setHasLocationPermission(status === 'granted');
-      }
-    })();
-  }, []);
 
 
   const openModal = () => {
@@ -90,9 +68,7 @@ export default function CameraScreen() {
     <SafeAreaView style={styles.container}>
       <Modal visible={isModalVisible} onRequestClose={closeModal}>
         <View style={styles.modalContainer}>
-          {hasCameraPermission && hasLocationPermission && (
-            <Camera style={styles.camera} ref={cameraRef} />
-          )}
+          <Camera style={styles.camera} ref={cameraRef} />
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.button} onPress={takePhoto}>
               <Text style={styles.buttonText}>Capturer</Text>
